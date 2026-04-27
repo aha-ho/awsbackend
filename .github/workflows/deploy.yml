@@ -63,27 +63,21 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
-        # envs는 스크립트 내부에서 사용할 변수 목록입니다.
         envs: SPRING_DATASOURCE_URL, SPRING_DATASOURCE_USERNAME, SPRING_DATASOURCE_PASSWORD, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, ECR_REGISTRY
         script: |
-          # 1. ECR 로그인
           aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $ECR_REGISTRY
           
-          # 2. 기존 컨테이너 정리
           sudo docker stop aws-lab-app || true
           sudo docker rm aws-lab-app || true
           
-          # 3. 새 이미지 가져오기
           sudo docker pull $ECR_REGISTRY/aws-lab-app:latest
           
-          # 4. 컨테이너 실행 (환경 변수 주입)
           sudo docker run -d --name aws-lab-app \
             -p 8080:8080 \
             -e SPRING_DATASOURCE_URL="$SPRING_DATASOURCE_URL" \
             -e SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
             -e SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD" \
             $ECR_REGISTRY/aws-lab-app:latest
-      # env는 appleboy/ssh-action 작업 자체에 전달되는 환경 변수입니다. (with와 같은 세로 라인)
       env:
         SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
