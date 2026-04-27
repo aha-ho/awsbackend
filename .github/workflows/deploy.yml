@@ -63,15 +63,23 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
-        envs: SPRING_DATASOURCE_URL, SPRING_DATASOURCE_USERNAME, SPRING_DATASOURCE_PASSWORD, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, ECR_REGISTRY
+        # envs에 나열된 변수들만 script 내에서 사용할 수 있습니다.
+        envs: SPRING_DATASOURCE_URL,SPRING_DATASOURCE_USERNAME,SPRING_DATASOURCE_PASSWORD,AWS_REGION,ECR_REGISTRY
         script: |
+          # ECR 로그인
           aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $ECR_REGISTRY
           
+          # 기존 컨테이너 중지 및 삭제
           sudo docker stop aws-lab-app || true
           sudo docker rm aws-lab-app || true
           
+          # 안 쓰는 이미지 정리 (용량 확보)
+          sudo docker image prune -f
+          
+          # 새 이미지 Pull
           sudo docker pull $ECR_REGISTRY/aws-lab-app:latest
           
+          # 컨테이너 실행 (환경변수 주입)
           sudo docker run -d --name aws-lab-app \
             -p 8080:8080 \
             -e SPRING_DATASOURCE_URL="$SPRING_DATASOURCE_URL" \
@@ -82,7 +90,5 @@ jobs:
         SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: us-east-2
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
