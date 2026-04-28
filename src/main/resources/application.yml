@@ -10,6 +10,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect  # 추가
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -21,3 +22,12 @@ spring:
     region: us-east-2
   s3:
     bucket: ${S3_BUCKET_NAME}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
