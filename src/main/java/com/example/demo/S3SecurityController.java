@@ -16,7 +16,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Value;
 
 @RestController
-@CrossOrigin(origins = "*") // 테스트를 위해 모든 오리진 허용
+@CrossOrigin(origins = "*") // 테스트를 위해 모든 오리진 허용함
 public class S3SecurityController {
 
     private final S3Client s3Client;
