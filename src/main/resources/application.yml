@@ -18,14 +18,13 @@ spring:
       hibernate:
         format_sql: true
 cloud:
-  aws:
+  aws: 
     region:
       static: us-east-2
     stack:
       auto: false
-
-  s3:
-    bucket: ${S3_BUCKET_NAME}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
 
 management:
   endpoints:
