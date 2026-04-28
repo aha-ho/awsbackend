@@ -16,3 +16,13 @@ spring:
    properties:
      hibernate:
        format_sql: true
+
+application.yml
+cloud:
+  aws:
+    region: us-east-2
+    
+
+build.gradle
+    implementation platform('software.amazon.awssdk:bom:2.25.40')
+    implementation 'software.amazon.awssdk:s3'
