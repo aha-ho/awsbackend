@@ -64,7 +64,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         # envs에 나열된 변수들만 script 내에서 사용할 수 있습니다.
-        envs: SPRING_DATASOURCE_URL,SPRING_DATASOURCE_USERNAME,SPRING_DATASOURCE_PASSWORD,AWS_REGION,ECR_REGISTRY
+        envs: SPRING_DATASOURCE_URL,SPRING_DATASOURCE_USERNAME,SPRING_DATASOURCE_PASSWORD,AWS_REGION,ECR_REGISTRY,S3_BUCKET_NAME
         script: |
           # ECR 로그인
           aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $ECR_REGISTRY
@@ -85,10 +85,12 @@ jobs:
             -e SPRING_DATASOURCE_URL="$SPRING_DATASOURCE_URL" \
             -e SPRING_DATASOURCE_USERNAME="$SPRING_DATASOURCE_USERNAME" \
             -e SPRING_DATASOURCE_PASSWORD="$SPRING_DATASOURCE_PASSWORD" \
+            -e S3_BUCKET_NAME="$S3_BUCKET_NAME" \
             $ECR_REGISTRY/aws-lab-app:latest
       env:
         SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
         SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
         AWS_REGION: us-east-2
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
