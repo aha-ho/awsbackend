@@ -17,9 +17,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+cloud:
   aws:
-    region: us-east-2
+    region:
+      static: us-east-2
+    stack:
+      auto: false
+
   s3:
     bucket: ${S3_BUCKET_NAME}
 
